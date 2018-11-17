@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <signal.h>
+#include <stdbool.h>
 
 #include "app.h"
 #include "../inc.h"
@@ -24,21 +25,35 @@ static time_t *times;
 
 
 void killHandler(int _sig) {
-	// printf("inside killHandler\n");
 	kill(getpid(), SIGUSR1);
 }
 
 void alarmHandler(int _sig) {
-	printf("time = %ld: Alarm occurred\n", time(NULL));
 	signal(SIGALRM, SIG_IGN);
-	walker++;
-	signal(SIGALRM, alarmHandler);
-	alarm(times[walker] - times[walker-1]);
+
+	printf("time = %ld: Alarm occurred\n", time(NULL));
+
+	if(linked_size() > 1) {
+		time_t prev = linked_getRoot();
+		linked_removeFirst();
+		while(linked_getRoot() == prev) {
+			linked_removeFirst();
+		}
+		signal(SIGALRM, alarmHandler);
+		alarm(linked_getRoot() - prev);
+	} else {
+		linked_removeFirst();
+	}
 }
 
 void usr1Handler(int _sig) {
-	printf("time = %ld, SIGUSR1 caught\n", time(NULL));
-	printf("time = %ld: alarm %d added, alarm time = %ld\n", time(NULL), walker, times[walker]);
+	printf("time = %ld: SIGUSR1 caught\n", time(NULL));
+	time_t new_time = linked_getRoot() + rand() % MAX_TIME + 1;
+	printf("time = %ld: alarm added, alarm time = %ld\n", time(NULL), new_time);
+	linked_add(new_time);
+	// printf("\n------------\n");
+	// linked_print();
+	// printf("------------\n\n");
 }
 
 
@@ -52,24 +67,12 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 
-	linked_init();		// Initializing linked list
-	linked_add(time(NULL));		// Adding current time to the beginning of the list
 	total = atoi(argv[1]);
 
-	// times = malloc(sizeof(time_t) * total);
+	generate_times(total);
 
-	// times[0] = time(NULL);
-	// printf("time = %ld: initial list =", times[0]);
-	int i;
-	for(i = 1; i <= total; i++) {
-		time_t new_time = linked_getEnd() + rand() % MAX_TIME + 1;
-		linked_add(new_time);
-	}
-
-	return 0;
-
-	walker = 1;
-	alarm(times[walker] - times[walker-1]);
+	time_t first = linked_getRoot();
+	linked_removeFirst();
 
 
 
@@ -87,8 +90,10 @@ int main(int argc, char **argv) {
 	// Declaring signal handler for alarms
 	signal(SIGALRM, alarmHandler);
 
+	alarm(linked_getRoot() - first);
+
 	// Wait until <1st cmd line argument> kill commands have been entered
-	while(walker <= total) {
+	while(!linked_empty()) {
 		pause();
 	}
 

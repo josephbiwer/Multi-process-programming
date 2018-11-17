@@ -13,4 +13,4 @@
  * param[in]    _times      Array to which random times should be placed in
  * param[in]    _size       Amount of times to be placed in the array (size of the array)
  */
-void generate_times(time_t *, int);
+void generate_times(int);

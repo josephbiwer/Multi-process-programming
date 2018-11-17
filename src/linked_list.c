@@ -1,6 +1,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "linked_list.h"
 
 
@@ -14,12 +15,14 @@ static struct Node* create_node_v2(void);
 /************************************************************************************************
  *                                    Private variables                                         *
  ************************************************************************************************/
+static int length;
 static struct Node *root;
 static struct Node *end;
 
 void linked_init(void) {
     root = NULL;
     end = NULL;
+    length = 0;
 }
 
 /************************************************************************************************
@@ -27,10 +30,10 @@ void linked_init(void) {
  ************************************************************************************************/
 
 void linked_add(time_t _time) {
-    
-    printf("adding node to linked list\n");
 
     if(root == NULL) {
+
+        printf("adding root node\n");
 
         // Creating new root node
         root = malloc(sizeof(struct Node));
@@ -38,6 +41,7 @@ void linked_add(time_t _time) {
         root->previous = NULL;
         root->next = NULL;
 
+        length++;
         end = root;
 
     } else {
@@ -45,6 +49,7 @@ void linked_add(time_t _time) {
         struct Node *temp = root;
         while(temp != NULL) {
             // Traverse linked list until we find a valid location for the time
+
             if(temp->next != NULL) {
                 if(_time < temp->time) {            // Belongs before current node, in other words: at beginning of the list
                     
@@ -56,6 +61,8 @@ void linked_add(time_t _time) {
 
                     // Old root points to new root
                     temp->previous = new_node;
+
+                    length++;
                     return;
 
                 } else if(temp->time <= _time && temp->next->time > _time) {     // Middle of the linked list
@@ -70,6 +77,8 @@ void linked_add(time_t _time) {
                     temp->next->previous = new_node;
                     // Next pointer points to new node
                     temp->next = new_node;
+
+                    length++;
                     return;
 
                 }
@@ -87,6 +96,7 @@ void linked_add(time_t _time) {
                 // Previous end pointer now points to new end
                 temp->next = new_node;
                 end = new_node;
+                length++;
                 return;
             }
             temp = temp->next;
@@ -100,6 +110,7 @@ void linked_destroy (void) {
         prev = temp;
         temp = temp->previous;
         free(prev);
+        length--;
     }
 }
 
@@ -119,6 +130,24 @@ void linked_print(void) {
     }
 }
 
+void linked_removeFirst(void) {
+    if(root != NULL) {
+        struct Node *temp = root;
+        root = root->next;
+        if(root != NULL)
+            root->previous = NULL;
+        free(temp);
+        length--;
+    }
+}
+
+bool linked_empty(void) {
+    return root == NULL;
+}
+
+int linked_size(void) {
+    return length;
+}
 
 /************************************************************************************************
  *                                    Private Functions                                          *
@@ -131,12 +160,10 @@ static struct Node* create_node(time_t _time, struct Node *_next, struct Node *_
     temp->previous = _previous;
     temp->next = _next;
     temp->time = _time;
-    printf("before return statement in create_node\n");
     return temp;
 }
 
 static struct Node* create_node_v2(void) {
     struct Node *temp = (struct Node*) malloc(sizeof(struct Node));
-    // printf("this is a test: %u, size: %ld\n", temp, sizeof(temp));
     return temp;
 }

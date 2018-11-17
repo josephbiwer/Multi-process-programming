@@ -1,0 +1,7 @@
+{
+    "git.ignoreLimitWarning": true,
+    "files.associations": {
+        "signal.h": "c",
+        "stdlib.h": "c"
+    }
+}

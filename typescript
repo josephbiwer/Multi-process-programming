@@ -1,0 +1,28 @@
+Script started on Fri Nov 16 19:32:02 2018
+bash-3.2$ make world
+cc src/main.c bin/app.o bin/linked_list.o -o output
+bash-3.2$ ./output 5
+current time: 1542418333, (1, 1542418348) (2, 1542418401) (3, 1542418424) (4, 1542418482) (5, 1542418495)
+time = 1542418348: Alarm occurred
+time = 1542418349: SIGUSR1 caught
+time = 1542418349: alarm added, alarm time = 1542418457
+time = 1542418351: SIGUSR1 caught
+time = 1542418351: alarm added, alarm time = 1542418448
+time = 1542418352: SIGUSR1 caught
+time = 1542418352: alarm added, alarm time = 1542418428
+time = 1542418353: SIGUSR1 caught
+time = 1542418353: alarm added, alarm time = 1542418418
+time = 1542418401: Alarm occurred
+time = 1542418418: Alarm occurred
+time = 1542418424: Alarm occurred
+time = 1542418428: Alarm occurred
+time = 1542418430: SIGUSR1 caught
+time = 1542418430: alarm added, alarm time = 1542418480
+time = 1542418448: Alarm occurred
+time = 1542418457: Alarm occurred
+time = 1542418480: Alarm occurred
+time = 1542418482: Alarm occurred
+time = 1542418495: Alarm occurred
+bash-3.2$ exit
+
+Script done on Fri Nov 16 19:35:05 2018
